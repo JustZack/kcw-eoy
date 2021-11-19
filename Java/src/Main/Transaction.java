@@ -16,6 +16,23 @@ public class Transaction {
 		return this.Month + "/" + this.Day + " " + this.Value + " " + this.Memo;
 	}
 	
+	private static String KeyValue(String key, String value, boolean comma) {
+		String pair = "\""+key+"\":\""+value+"\"";
+		if (comma) pair = pair + ",";
+		return pair;
+	}
+	public String toJSON() {
+		StringBuilder JSON = new StringBuilder();
+		JSON.append("{");
+		JSON.append(KeyValue("Month", this.Month, true));
+		JSON.append(KeyValue("Day", this.Day, true));
+		JSON.append(KeyValue("Value", this.Value, true));
+		JSON.append(KeyValue("Memo", this.Memo, true));
+		JSON.append(KeyValue("transactionString", this.transactionString, false));
+		JSON.append("}");
+		return JSON.toString();
+	}
+	
 	public static String getTransactionDate(String line) {
 		if (line.trim().length() > 0) {
 			String firstWord = line.split(" ")[0];

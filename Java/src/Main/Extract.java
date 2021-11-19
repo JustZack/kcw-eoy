@@ -1,6 +1,7 @@
 package Main;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.*;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -109,6 +110,18 @@ public class Extract {
 		
 		ArrayList<Transaction> transactions = Extract.extractTractionsFromLines(lines);
 		String statementDate = Extract.extractFirstDate(lines);
-		System.out.println("Statement Date: " + statementDate);
+		
+		StringBuilder JSON = new StringBuilder();
+		JSON.append("[\n");
+		for (int i = 0;i < transactions.size();i++) {
+			String toAppend = transactions.get(i).toJSON();
+			if (i < transactions.size() - 1) toAppend += ",";
+			JSON.append(toAppend+"\n");
+		}
+		JSON.append("]");
+		
+		FileWriter file = new FileWriter(statementDate+".json");
+		file.write(JSON.toString());
+		file.close();
 	}
 }
