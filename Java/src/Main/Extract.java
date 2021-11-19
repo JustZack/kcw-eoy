@@ -1,6 +1,7 @@
 package Main;
 
 import java.io.File;
+import java.util.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -10,54 +11,7 @@ import java.util.ArrayList;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
-public class ExtractTransactions {
-	
-	public class Transaction {
-		
-		public enum TransactionType {
-			Purchase,
-			OnlineTransfer,
-			Recurring,
-			EDeposit,
-			MobileDeposit,
-			Check,
-		}
-		
-		public int Month;
-		public int Day;
-		public String Title;
-		public TransactionType type;
-		
-		public static boolean isTransactionStart(String line) {
-			if (line.trim().length() > 0) {
-				String firstWord = line.split(" ")[0];
-				return firstWord.matches("^([0-9]+\\/[0-9]+)");
-			}
-			return false;
-		}
-		
-		private static String transactionValueRegex = "(([0-9]?[0-9]?[0-9],)?[0-9]?[0-9]?[0-9]\\.[0-9]{2})";
-		public static String getTransactionValue(String line) {
-			String[] words = line.split(" ");
-			String value = new String("");
-			if (words.length > 1) {
-				String[] lastWords = new String[2];
-				lastWords[0] = words[words.length-2];
-				lastWords[1] = words[words.length-1];
-				
-				if (lastWords[0].matches(transactionValueRegex)) value = lastWords[0];
-				else if (lastWords[1].matches(transactionValueRegex)) value = lastWords[1];
-			} else if (words.length > 0) {
-				if (words[0].matches(transactionValueRegex)) value = words[0];
-			}
-			
-			return value;
-		}
-		public static boolean isTransactionEnd(String line) {
-			String value = Transaction.getTransactionValue(line);
-			return (value.length() > 0);
-		}
-	}
+public class Extract {
 	
 	private static String extractTextFromPDF(String pathToPDF) throws IOException {
 		PDDocument doc = null;
@@ -81,13 +35,8 @@ public class ExtractTransactions {
         
         return text;
 	}
-
-	public static ArrayList<Transaction> extractTractionsFromStatement(String pathToPDF) throws IOException {
-		//The entire PDF as a string
-		String pdftext = ExtractTransactions.extractTextFromPDF(pathToPDF);
-		//The entire PDF as an array of strings, split on new lines
-		String[] lines = pdftext.split("[\\r\\n]+");
-		
+	
+	public static ArrayList<Transaction> extractTractionsFromLines(String[] lines) throws IOException {		
 		ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 		
 		//Where the transaction lines begin and end
@@ -123,9 +72,8 @@ public class ExtractTransactions {
 					
 					if (Transaction.isTransactionEnd(lines[lineNumber])) {
 						foundTransactionStart = false;
-						
 						String transaction  = transactionString.toString();
-						System.out.println(transaction);
+						transactions.add(Transaction.buildFromString(transaction));
 						transactionString = new StringBuilder();
 					}
 				}
@@ -134,9 +82,33 @@ public class ExtractTransactions {
 			}
 		} 
 		
-
-		
 		return transactions;
 		
+	}
+
+	public static String extractFirstDate(String[] lines) throws IOException {
+		ArrayList<String> months = new ArrayList<String>(Arrays.asList("january", "febuary", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"));
+		for (String line : lines) {
+			if (line.trim().length() > 0) {
+				String[] parts = line.toLowerCase().split(" ");
+				if (months.contains(parts[0])) {
+					String date = String.format("%s %s%s", parts[0], parts[1], parts[2]);
+					return date.replace(',', ' ').replace(' ', '-');
+				}
+			}
+		}
+		
+		return new String();
+	}
+	
+	public static void extractPDFtoJSON(String pathToPDF) throws IOException {
+		//The entire PDF as a string
+		String pdftext = Extract.extractTextFromPDF(pathToPDF);
+		//The entire PDF as an array of strings, split on new lines
+		String[] lines = pdftext.split("[\\r\\n]+");
+		
+		ArrayList<Transaction> transactions = Extract.extractTractionsFromLines(lines);
+		String statementDate = Extract.extractFirstDate(lines);
+		System.out.println("Statement Date: " + statementDate);
 	}
 }

@@ -12,7 +12,7 @@ public class EndOfYear {
         }
         else
         {
-        	ExtractTransactions.extractTractionsFromStatement(args[0]); 
+        	Extract.extractPDFtoJSON(args[0]); 
         }
     }
     
