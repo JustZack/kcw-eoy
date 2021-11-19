@@ -2,24 +2,10 @@ package Main;
 
 public class Transaction {
 	
-	public enum TransactionType {
-		Purchase,
-		OnlineTransferTo,
-		OnlineTransferFrom,
-		RecurringTransferTo,
-		RecurringPayment,
-		Deposit,
-		PaymentFromPaypal,
-		PaypalPayment,
-		Check,
-		Other
-	}
-	
 	public String Month;
 	public String Day;
 	public String Memo;
 	public String Value;
-	public TransactionType type;
 	public String transactionString;
 	
 	public Transaction() {
@@ -27,7 +13,7 @@ public class Transaction {
 	}
 	
 	public String toString() {
-		return "[" + this.type.name() + "] " + this.Value + " " + this.Month + "/" + this.Day + " " + this.Memo;
+		return this.Month + "/" + this.Day + " " + this.Value + " " + this.Memo;
 	}
 	
 	public static String getTransactionDate(String line) {
@@ -65,33 +51,7 @@ public class Transaction {
 		String value = Transaction.getTransactionValue(line);
 		return (value.length() > 0);
 	}
-	
-	public static TransactionType getTransactionType(String memo) {
-		memo = memo.toLowerCase();
-		
-		if (memo.contains("purchase"))
-			return TransactionType.Purchase;
-		else if (memo.contains("online transfer to"))
-			return TransactionType.OnlineTransferTo;
-		else if (memo.contains("online transfer from"))
-			return TransactionType.OnlineTransferFrom;
-		else if (memo.contains("recurring transfer to"))
-			return TransactionType.RecurringTransferTo;
-		else if (memo.contains("recurring payment"))
-			return TransactionType.RecurringPayment;
-		else if (memo.contains("check"))
-			return TransactionType.Check;
-		else if (memo.contains("edeposit in") || memo.contains("deposit"))
-			return TransactionType.Deposit;
-		else if (memo.contains("rtp from paypal"))
-			return TransactionType.PaymentFromPaypal;
-		else if (memo.contains("paypal inst xfer"))
-			return TransactionType.PaypalPayment;
-		
-		
-		return TransactionType.Other;
-	}
-	
+
 	public static Transaction buildFromString(String transactionStr) {
 		Transaction t = new Transaction();
 		t.transactionString = transactionStr;
@@ -102,7 +62,6 @@ public class Transaction {
 		
 		String memo = transactionStr.substring(transactionStr.indexOf(" "));
 		t.Memo = memo.substring(0, memo.indexOf(t.Value)).trim();
-		t.type = Transaction.getTransactionType(t.Memo);
 		
 		System.out.println(t.toString());
 		return t;
