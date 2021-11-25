@@ -14,24 +14,22 @@ include_once "categorize-transactions.php";
 
 function  kcw_eoy_register_dependencies() {
     wp_register_style("kcw-eoy", plugins_url("kcw-eoy.css", __FILE__), null, "1.0.0");
-    //wp_register_script("kcw-gallery", plugins_url("kcw-gallery.js", __FILE__), array('jquery'), "1.4.5");
+    wp_register_script("kcw-eoy", plugins_url("kcw-eoy.js", __FILE__), array('jquery'), "1.0.0");
 }
 add_action("wp_enqueue_scripts", "kcw_eoy_register_dependencies");
 
 function kcw_eoy_enqueue_dependencies() {
     wp_enqueue_style("kcw-eoy");
-    //wp_enqueue_script("kcw-eoy");
+    wp_enqueue_script("kcw-eoy");
 }
 
 function kcw_eoy_upload_html($show = false) {
     return "
-    <script src='https://unpkg.com/dropzone@5/dist/min/dropzone.min.js'></script>
-    <link rel='stylesheet' href='https://unpkg.com/dropzone@5/dist/min/dropzone.min.css' type='text/css' />
     <div class='kcw-eoy-upload-wrapper'>
-        <form method='post' action='upload-statements.php' class='dropzone' id='upload-dropzone' enctypemultipart/form-data'>
+        <form id='uploads-form' action=''>
             <label for='kcw-eoy-statements-upload'>Upload Wells Fargo Statements: </label>
-            <input type='file' id='kcw-eoy-statements-upload' name='kcw-eoy-statements-upload'> 
-            <button id='kcw-eoy-upload-files'>Upload Files</button>
+            <input type='file' multiple id='kcw-eoy-statements-upload' name='kcw-eoy-statements-upload'> 
+            <button id='kcw-eoy-upload-files-button'>Upload Files</button>
         </form>
     </div>
     ";
@@ -55,6 +53,15 @@ function kcw_eoy_dashboard_html($show = true) {
     </div>";
 }
 
+function kcw_eoy_js_data_html() {
+    $uploadURL = plugins_url('upload-statements.php', __FILE__);
+    $uploadPath = wp_upload_dir()["basedir"]."/kcw-eoy/";
+    $uploadPath = str_replace('\\', "/", $uploadPath);
+    $uploadPath = str_replace('//', "/", $uploadPath);
+    $js = '<script>var kcw_eoy = { uploadURL : "'.$uploadURL.'", uploadPath : "'.$uploadPath.'" }</script>';
+    return $js;
+}
+
 function kcw_eoy_StartBlock() {
     return "<div class='kcw-eoy-wrapper'>\n";
 } 
@@ -69,6 +76,8 @@ function kcw_eoy_Init() {
     if (!isset($current_step)) $current_step = "dashboard";
 
     $html = kcw_eoy_StartBlock();
+
+    $html .= kcw_eoy_js_data_html();
 
     $html .= kcw_eoy_dashboard_html();
     $html .= kcw_eoy_upload_html();
