@@ -82,8 +82,8 @@ function kcw_eoy_Init() {
     $html .= kcw_eoy_dashboard_html();
     $html .= kcw_eoy_upload_html();
 
-    $f = kcw_eoy_getJSONfromFile(__DIR__ . "\october-18-2021.json");
-    kcw_eoy_auto_categorize($f);
+    //$f = kcw_eoy_getJSONfromFile(__DIR__ . "\october-18-2021.json");
+    //kcw_eoy_auto_categorize($f);
 
     $html .= kcw_eoy_EndBlock();
     echo $html;

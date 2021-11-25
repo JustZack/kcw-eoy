@@ -102,7 +102,7 @@ public class Extract {
 		return new String();
 	}
 	
-	public static void extractPDFtoJSON(String pathToPDF) throws IOException {
+	public static void extractPDFtoJSON(String pathToPDF, String pathToDir) throws IOException {
 		//The entire PDF as a string
 		String pdftext = Extract.extractTextFromPDF(pathToPDF);
 		//The entire PDF as an array of strings, split on new lines
@@ -120,7 +120,7 @@ public class Extract {
 		}
 		JSON.append("]");
 		
-		FileWriter file = new FileWriter(statementDate+".json");
+		FileWriter file = new FileWriter(pathToDir+""+statementDate+".json");
 		file.write(JSON.toString());
 		file.close();
 	}

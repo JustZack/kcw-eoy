@@ -6,13 +6,13 @@ public class EndOfYear {
 
     public static void main(String[] args) throws IOException
     {
-        if( args.length != 1 )
+        if( args.length != 2 )
         {
             usage();
         }
         else
         {
-        	Extract.extractPDFtoJSON(args[0]); 
+        	Extract.extractPDFtoJSON(args[0], args[1]); 
         }
     }
     
