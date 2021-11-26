@@ -11,6 +11,7 @@
 include_once "api.php";
 include_once "file-helpers.php";
 include_once "categorize-transactions.php";
+include_once "globals.php";
 
 function  kcw_eoy_register_dependencies() {
     wp_register_style("kcw-eoy", plugins_url("kcw-eoy.css", __FILE__), null, "1.0.0");
@@ -54,10 +55,9 @@ function kcw_eoy_dashboard_html($show = true) {
 }
 
 function kcw_eoy_js_data_html() {
+    global $kcw_eoy_upload_path;
     $uploadURL = plugins_url('upload-statements.php', __FILE__);
-    $uploadPath = wp_upload_dir()["basedir"]."/kcw-eoy/";
-    $uploadPath = str_replace('\\', "/", $uploadPath);
-    $uploadPath = str_replace('//', "/", $uploadPath);
+    $uploadPath = $kcw_eoy_upload_path;
     $js = '<script>var kcw_eoy = { uploadURL : "'.$uploadURL.'", uploadPath : "'.$uploadPath.'" }</script>';
     return $js;
 }

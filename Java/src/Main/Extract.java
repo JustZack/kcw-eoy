@@ -88,7 +88,7 @@ public class Extract {
 	}
 
 	public static String extractFirstDate(String[] lines) throws IOException {
-		ArrayList<String> months = new ArrayList<String>(Arrays.asList("january", "febuary", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"));
+		ArrayList<String> months = new ArrayList<String>(Arrays.asList("january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"));
 		for (String line : lines) {
 			if (line.trim().length() > 0) {
 				String[] parts = line.toLowerCase().split(" ");

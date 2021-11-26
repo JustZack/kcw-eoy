@@ -1,5 +1,8 @@
 <?php
 
+include_once "globals.php";
+include_once "api-helpers.php";
+
 $kcw_eoy_api_namespace = "kcweoy";
 $kcw_eoy_api_url = home_url('wp-json/' . $kcw_eoy_api_namespace . '/v1/');
 //$kcw_eoy_api_url = "https://kustomcoachwerks.com/wp-json/kcweoy/v1/";
@@ -18,28 +21,45 @@ function kcw_eoy_api_Success($data) {
     return $data;
 }
 
-//Return the given gallery, with an assumed first page
-function kcw_eoy_api_GetGallery($data) {
-    $data['gpage'] = 1;
+function kcw_eoy_api_GetTransactionFileList($data) {
+    $data = array();
+    $data["items"] = kcw_eoy_GetTransactionFileData();
+    return kcw_eoy_api_Success($data);
+}
+
+function kcw_eoy_api_GetTransactions($data) {
+    $transactions = kcw_eoy_GetTransactionFileData();
+    $data = array();
+    
+    //Get transactions for the given range if required params are present
+    if (isset($_GET["from"]) && isset($_GET["to"])) {
+        $from = explode('.', $_GET["from"]);
+        $to = explode('.', $_GET["to"]);
+        $data["from"] = $from;
+        $data["to"] = $to;
+
+        $items = array();
+        foreach ($transactions as $t) {
+            array_push($items, $t);
+        }
+        $data["items"] = $items;
+    }//Otherwise respond with an error
+    else { 
+        return kcw_eoy_api_Error("Missing required parameters.");
+    }
+    return kcw_eoy_api_Success($data);
 }
 
 //Register all the API routes
 function kcw_eoy_api_RegisterRestRoutes() {
     global $kcw_eoy_api_namespace;
-    //Route for /gallery-id
-    register_rest_route( "$kcw_eoy_api_namespace/v1", '/(?P<guid>[a-zA-Z0-9-\.\(\)_h]+)', array(
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/List/TransactionFiles', array(
         'methods' => 'GET',
-        'callback' => 'kcw_eoy_api_GetGallery',
+        'callback' => 'kcw_eoy_api_GetTransactionFileList',
     ));
-    //Route for /gallery-id/meta
-    register_rest_route( "$kcw_eoy_api_namespace/v1", '/(?P<guid>[a-zA-Z0-9-\.\(\)_h]+)/meta', array(
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactions', array(
         'methods' => 'GET',
-        'callback' => 'kcw_eoy_api_GetGalleryMeta',
-    ));
-    //Route for /gallery-id/page
-    register_rest_route("$kcw_eoy_api_namespace/v1", '/(?P<guid>[a-zA-Z0-9-\.\(\)_h ]+)/(?P<gpage>\d+)', array(
-        'methods' => 'GET',
-        'callback' => 'kcw_eoy_api_GetGalleryPage',
+        'callback' => 'kcw_eoy_api_GetTransactions',
     ));
 }
 

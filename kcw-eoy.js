@@ -9,7 +9,7 @@ jQuery(document).ready(function(){
    function uploadFile() {
       var files = document.getElementById("kcw-eoy-statements-upload").files;
       
-      if(files.length > 0){
+      if(files.length > 0) {
          
          var formData = new FormData();
          formData.append("uploadDir", kcw_eoy.uploadPath);
