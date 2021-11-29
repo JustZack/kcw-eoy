@@ -2,10 +2,6 @@
 
 include_once "globals.php";
 
-function kcw_eoy_TransactionInRange($transaction, $from, $to) {
-    
-}
-
 function kcw_eoy_TransactionFileToAPIData($name) {
     $contents = file_get_contents($name);
     $json = json_decode($contents, true);
@@ -49,9 +45,11 @@ function kcw_eoy_GetTransactionFileDataFor($year) {
 
         //Any statement from the given year passes OR Check for the first statement of the NEXT year to get the last couple transactions of the desired year
         if ($fData["year"] == $year) {
-            $data[$endMonth] = $fData;
+            if (!isset($data[$endMonth])) $data[$endMonth] = array();
+            array_push($data[$endMonth], $fData);
         } else if ($intYear+1 == (int)$fData["year"] && $startMonth == "12") {
-            $data["13"] = $fData;
+            if (!isset($data["13"])) $data["13"] = array();
+            array_push($data["13"], $fData);
         }
     }
 

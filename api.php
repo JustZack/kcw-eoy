@@ -51,18 +51,29 @@ function kcw_eoy_api_GetTransactions($data) {
 }
 
 
+//Get all transaction file data for the given year
 function kcw_eoy_api_Status($data) {
     $year = $data["year"];
     $files = kcw_eoy_GetTransactionFileDataFor($year);
 
-    $data = array();
-    foreach ($files as $f) {
-        $month = explode("/", $f["last"])[0];
-    }
-
     return kcw_eoy_api_Success($files);
 }
 
+function kcw_eoy_epi_DeleteStatement($data) {
+    global $kcw_eoy_upload_path;
+    $filename = $data["filename"];
+    $file = $kcw_eoy_upload_path.$filename;
+
+    if (file_exists($file)) {
+        unlink($file);
+        return kcw_eoy_api_Success(array());
+    } else {
+        return kcw_eoy_api_Error("File '$filename' doesnt exist");
+    }
+    
+}
+
+//Get all transactions for the given year
 function kcw_eoy_api_Transactions($data) {
     $year = $data["year"];
 
@@ -79,15 +90,6 @@ function kcw_eoy_api_Transactions($data) {
 //Register all the API routes
 function kcw_eoy_api_RegisterRestRoutes() {
     global $kcw_eoy_api_namespace;
-    register_rest_route("$kcw_eoy_api_namespace/v1", '/List/TransactionFiles', array(
-        'methods' => 'GET',
-        'callback' => 'kcw_eoy_api_GetTransactionFileList',
-    ));
-    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactions', array(
-        'methods' => 'GET',
-        'callback' => 'kcw_eoy_api_GetTransactions',
-    ));
-
 
     register_rest_route("$kcw_eoy_api_namespace/v1", '/Status/(?P<year>[0-9]{4})', array(
         'methods' => 'GET',
@@ -97,6 +99,11 @@ function kcw_eoy_api_RegisterRestRoutes() {
     register_rest_route("$kcw_eoy_api_namespace/v1", '/Transactions/(?P<year>[0-9]{4})', array(
         'methods' => 'GET',
         'callback' => 'kcw_eoy_api_Transactions',
+    ));
+
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/DeleteStatement/(?P<filename>(([a-zA-Z0-9]+)-){3}([0-9]{4})\.json)', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_epi_DeleteStatement',
     ));
 }
 
