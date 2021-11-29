@@ -120,7 +120,8 @@ public class Extract {
 		}
 		JSON.append("]");
 		
-		FileWriter file = new FileWriter(pathToDir+""+statementDate+".json");
+		String fileName = Integer.toHexString((int)System.currentTimeMillis()) + "-" + statementDate;
+		FileWriter file = new FileWriter(pathToDir+""+fileName+".json");
 		file.write(JSON.toString());
 		file.close();
 	}

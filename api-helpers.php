@@ -10,13 +10,17 @@ function kcw_eoy_TransactionFileToAPIData($name) {
     $contents = file_get_contents($name);
     $json = json_decode($contents, true);
 
+
     $date = substr($name, 0, strrpos($name, '.json'));
     $date = substr($date, strrpos($date, '/')+1);
+    $filename = $date;
+    $date = substr($date, strpos($date, '-')+1);
     $date = ucwords(str_replace('-', ' ', $date));
     
     $fData = array();
     $fData["date"] = $date;
     $fData["count"] = count($json);
+    $fData["filename"] = $filename.".json";
     $last = $fData["count"]-1;
     $fData["first"] = $json[0]["Month"].'/'.$json[0]["Day"];
     $fData["last"] = $json[$last]["Month"].'/'.$json[$last]["Day"];
