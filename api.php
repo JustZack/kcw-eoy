@@ -55,8 +55,9 @@ function kcw_eoy_api_GetTransactions($data) {
 function kcw_eoy_api_Status($data) {
     $year = $data["year"];
     $files = kcw_eoy_GetTransactionFileDataFor($year);
-
-    return kcw_eoy_api_Success($files);
+    $data = array();
+    $data["items"] = $files;
+    return kcw_eoy_api_Success($data);
 }
 
 function kcw_eoy_epi_DeleteStatement($data) {

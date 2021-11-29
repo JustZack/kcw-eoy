@@ -25,40 +25,60 @@ function kcw_eoy_enqueue_dependencies() {
 }
 
 function kcw_eoy_upload_html($show = false) {
+    $style = "";
+    if (!$show) $style = "style='display:none;'";
+
     return "
-    <div class='kcw-eoy-upload-wrapper'>
+    <div id='kcw-eoy-upload-wrapper' $style>
         <form id='uploads-form' action=''>
             <label for='kcw-eoy-statements-upload'>Upload Wells Fargo Statements: </label>
             <input type='file' multiple id='kcw-eoy-statements-upload' name='kcw-eoy-statements-upload'> 
             <button id='kcw-eoy-upload-files-button'>Upload Files</button>
         </form>
+        <div id='kcw-eoy-upload-status-wrapper'></div>
     </div>
     ";
 }
 
-
+function kcw_eoy_dropdown($id, $values) {
+    $select = "<select id='$id'>";
+    foreach ($values as $val)
+        $select .= "<option value='$val'>$val</option>";
+    $select .= "</select>";
+    return $select;
+}
 
 function kcw_eoy_dashboard_html($show = true) {
+    $last20years = array();
+    $current_year = (int)date("Y");
+    $first_year = 2001;
+    for ($i = $current_year;$i >= $first_year;$i--) {
+        $last20years[] = $i;
+    }
+    $dropdown = kcw_eoy_dropdown("kcw-eoy-select-year", $last20years);
     return "
-    <div class='kcw-eoy-dashboard-wrapper'>
-        <div class='kcw-eoy-dashboard-row'>
-            <center>
-                <div class='kcw-eoy-dashboard-item'>Upload</div><div class='kcw-eoy-dashboard-item'>Select Transactions</div>
-            </center>
+    <div id='kcw-eoy-start'>
+        <div class='kcw-eoy-start-year'>
+            <label for='kcw-eoy-year-input'>Choose a year </label>
+            $dropdown
         </div>
-        <div class='kcw-eoy-dashboard-row'>
-            <center>
-                <div class='kcw-eoy-dashboard-item'>Download Reports</div>
-            </center>
+        <div id='kcw-eoy-start-option'>
+            <button id='kcw-eoy-start-generate-eoy'>Upload & Generate EOY</button>
+            <button id='kcw-eoy-start-browse-eoy'>Browse EOY Documents</button>
         </div>
     </div>";
 }
 
 function kcw_eoy_js_data_html() {
     global $kcw_eoy_upload_path;
+    global $kcw_eoy_api_url;
     $uploadURL = plugins_url('upload-statements.php', __FILE__);
-    $uploadPath = $kcw_eoy_upload_path;
-    $js = '<script>var kcw_eoy = { uploadURL : "'.$uploadURL.'", uploadPath : "'.$uploadPath.'" }</script>';
+    $uploadPath = ""; //$kcw_eoy_upload_path;
+    $apiURL = $kcw_eoy_api_url;
+    $js = "<script>var kcw_eoy = { 'uploadURL' : '$uploadURL'," 
+         ."'uploadPath' : '$uploadPath'," 
+         ."'api_url' : '$apiURL'"
+         ."}</script>";
     return $js;
 }
 
@@ -71,9 +91,6 @@ function kcw_eoy_EndBlock() {
 function kcw_eoy_Init() {
 
     kcw_eoy_enqueue_dependencies();
-
-    $current_step = $_GET["step"];
-    if (!isset($current_step)) $current_step = "dashboard";
 
     $html = kcw_eoy_StartBlock();
 
