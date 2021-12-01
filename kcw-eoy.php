@@ -24,9 +24,16 @@ function kcw_eoy_enqueue_dependencies() {
     wp_enqueue_script("kcw-eoy");
 }
 
+function kcw_eoy_transactions_html($show = false) {
+    $style = ""; if ($show) $style = "style='display:none;'";
+    return "
+    <div id='kcw-eoy-transactions-wrapper' $style>
+
+    </div>";
+}
+
 function kcw_eoy_upload_html($show = false) {
-    $style = "";
-    if (!$show) $style = "style='display:none;'";
+    $style = ""; if (!$show) $style = "style='display:none;'";
 
     return "
     <div id='kcw-eoy-upload-wrapper' $style>
@@ -36,6 +43,7 @@ function kcw_eoy_upload_html($show = false) {
             <button id='kcw-eoy-upload-files-button'>Upload Files</button>
         </form>
         <div id='kcw-eoy-upload-status-wrapper'></div>
+        <button id='kcw-eoy-categorize-transactions'>View & Categorize Transactions</button>
     </div>
     ";
 }
@@ -69,6 +77,16 @@ function kcw_eoy_dashboard_html($show = true) {
     </div>";
 }
 
+function kcw_eoy_header_html() {
+    return "
+    <div id='kcw-eoy-header'>
+        <div></div>
+        <div id='kcw-eoy-header-home'>Home</div>
+        <div id='kcw-eoy-header-selected-year'></div>
+        <div id='kcw-eoy-header-file-browser'>Files</div>
+    </div>";
+}
+
 function kcw_eoy_js_data_html() {
     global $kcw_eoy_upload_path;
     global $kcw_eoy_api_url;
@@ -96,6 +114,7 @@ function kcw_eoy_Init() {
 
     $html .= kcw_eoy_js_data_html();
 
+    $html .= kcw_eoy_header_html();
     $html .= kcw_eoy_dashboard_html();
     $html .= kcw_eoy_upload_html();
 

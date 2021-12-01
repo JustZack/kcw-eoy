@@ -19,13 +19,36 @@ jQuery(document).ready(function(){
    var CALENDAR_YEAR = -1;
    function setCalendarYear() {
       CALENDAR_YEAR = jQuery("#kcw-eoy-select-year").val();
+      jQuery("#kcw-eoy-header-selected-year").text(CALENDAR_YEAR);
    }
 
    function createMonthRow(monthData) {
       var html = "";
-      for (var d in monthData) {
-         html += "<div>"+monthData[d].filename+"</div>";
+      
+      //Atleast one transaction log found
+      if (monthData.length > 0) {
+         var month = monthData[0].date.split(" ")[0];
+         var year = monthData[0].year;
+
+         html += "<div class='kcw-eoy-month-status-row-wrapper'>";
+         html += `<strong>${month} ${year}</strong>`;
+         for (var m in monthData) {
+            var md = monthData[m]; var d = new Date(0); d.setUTCSeconds(md.uploaded)
+            html += "<div class='kcw-eoy-month-status-row-item'>";
+            html += `<div class='kcw-eoy-month-status-date'>${md.date}</div>`;
+            html += `<div class='kcw-eoy-month-status-range'>${md.first} - ${md.last}</div>`;
+            html += `<div class='kcw-eoy-month-status-count'>${md.count} Rows</div>`;
+            html += `<div class='kcw-eoy-month-status-uploaded'>Uploaded on ${d.toLocaleString()}</div>`;
+            html += `<div class='kcw-eoy-month-status-delete-item' data-filename='${md.filename}'>Delete</div>`;
+            html += "</div>";
+         }
+
+         html += "</div>";
+      } else {
+         //Row is missing data, ask for upload
+         html += "<div>No Data</div>"
       }
+
       return html;
    }
    function displayYearStatus(data) {
@@ -36,14 +59,10 @@ jQuery(document).ready(function(){
       }
       jQuery("#kcw-eoy-upload-status-wrapper").html(html);
    }
-   function updateYearStatus() {
-      ApiCall("Status/", CALENDAR_YEAR, displayYearStatus);
-   }
    function doStepOne() {
-      updateYearStatus();
+      ApiCall("Status/", CALENDAR_YEAR, displayYearStatus);
       jQuery("#kcw-eoy-upload-wrapper").attr("style", "");
       jQuery("#kcw-eoy-start").attr("style", "display:none;");
-      
    }
    
    jQuery("#kcw-eoy-start-generate-eoy").on('click', function(e){
@@ -58,6 +77,19 @@ jQuery(document).ready(function(){
    jQuery("#kcw-eoy-upload-files-button").on('click', function(e){
       e.preventDefault();
       doUploadFile();
+   });
+
+   function displayYearTransactions(data) {
+      console.log(data);
+   }
+   function doStepTwo() {
+      ApiCall("Transactions/", CALENDAR_YEAR, displayYearTransactions);
+      jQuery("#kcw-eoy-transactions-wrapper").attr("style", "");
+      jQuery("#kcw-eoy-upload-wrapper").attr("style", "display:none;");
+   }
+
+   jQuery("#kcw-eoy-categorize-transactions").on('click', function(e){
+      doStepTwo();
    });
    // Upload file
    function doUploadFile() {
