@@ -14,8 +14,8 @@ include_once "categorize-transactions.php";
 include_once "globals.php";
 
 function  kcw_eoy_register_dependencies() {
-    wp_register_style("kcw-eoy", plugins_url("kcw-eoy.css", __FILE__), null, "1.0.0");
-    wp_register_script("kcw-eoy", plugins_url("kcw-eoy.js", __FILE__), array('jquery'), "1.0.0");
+    wp_register_style("kcw-eoy", plugins_url("kcw-eoy.css", __FILE__), null, "1.0.1");
+    wp_register_script("kcw-eoy", plugins_url("kcw-eoy.js", __FILE__), array('jquery'), "1.0.1");
 }
 add_action("wp_enqueue_scripts", "kcw_eoy_register_dependencies");
 
@@ -37,6 +37,10 @@ function kcw_eoy_upload_html($show = false) {
 
     return "
     <div id='kcw-eoy-upload-wrapper' $style>
+        <div class='kcw-eoy-step-explanation'>
+            Upload new statements for missing months;
+            Remove any additional statements, exactly 13 statements must exist.
+        </div>
         <form id='uploads-form' action=''>
             <label for='kcw-eoy-statements-upload'>Upload Wells Fargo Statements: </label>
             <input type='file' multiple id='kcw-eoy-statements-upload' name='kcw-eoy-statements-upload'> 
@@ -91,7 +95,7 @@ function kcw_eoy_js_data_html() {
     global $kcw_eoy_upload_path;
     global $kcw_eoy_api_url;
     $uploadURL = plugins_url('upload-statements.php', __FILE__);
-    $uploadPath = ""; //$kcw_eoy_upload_path;
+    $uploadPath = $kcw_eoy_upload_path;
     $apiURL = $kcw_eoy_api_url;
     $js = "<script>var kcw_eoy = { 'uploadURL' : '$uploadURL'," 
          ."'uploadPath' : '$uploadPath'," 

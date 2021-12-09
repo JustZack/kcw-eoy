@@ -1,20 +1,42 @@
-div.kcw-eoy-wrapper {
-
+div.kcw-eoy-month-status-row-wrapper {
+    padding-top: 25px;
 }
 
-div.kcw-eoy-dashboard-wrapper {
-
+div.kcw-eoy-month-status-row-item {
+    border-top: 2px solid black;
+    padding-bottom: 5px;
+    position: relative;
 }
 
-div.kcw-eoy-dashboard-row {
-
-}
-
-div.kcw-eoy-dashboard-item {
+div.kcw-eoy-month-status-row-item div {
     display: inline-block;
-    height: 200px;
-    width: 200px;
-    border: 2px solid black;
-    border-radius: 5px;
-    margin: 5px;
+    margin-left: 25px;
+}
+div.kcw-eoy-month-status-row-wrapper div.kcw-eoy-month-status-row-item:last-child {
+    border-bottom: 2px solid black;
+}
+div.kcw-eoy-month-status-row-wrapper:last-child div.kcw-eoy-month-status-row-item:last-child {
+    border-bottom: 0px;
+}
+
+div div.kcw-eoy-month-status-uploaded {
+    display: block;
+}
+
+div.kcw-eoy-month-status-delete-item {
+    border: 2px solid red;
+    border-radius: 25px;
+    padding: 5px 10px;
+    display: inline;
+    background: white;
+    color: red;
+    font-weight: bolder;
+    position: absolute;    
+    right: 10px;
+    bottom: 10px;
+}
+div.kcw-eoy-month-status-delete-item:hover {
+    background: red;
+    color: white;
+    cursor: pointer;
 }

@@ -67,6 +67,11 @@ function kcw_eoy_CullTransactions($transactions, $keepMonth) {
     return $toReturn;
 }
 
+/* 
+    NOTE: this code ends up taking the LAST file it finds for each month of the given year,
+    Since it is non-arbituaruy to determine which files to use, it is important that
+    exactly 13 statements exist for the given year when EOY is generated.
+ */
 function kcw_eoy_GetTransactionsFor($year) {
     $files = kcw_eoy_GetJSONFiles();
     $data = array();

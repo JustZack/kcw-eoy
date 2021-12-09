@@ -16,6 +16,18 @@ jQuery(document).ready(function(){
       console.log("Request for "+endpoint+" Failed");
    }
 
+   function doDashboard() {
+      jQuery("#kcw-eoy-start").attr("style", "");
+      jQuery("#kcw-eoy-upload-wrapper").attr("style", "display:none;");
+      jQuery("#kcw-eoy-transactions-wrapper").attr("style", "display:none; ");
+      jQuery("#kcw-eoy-header-selected-year").text("");
+   }
+
+   jQuery("#kcw-eoy-header-home").on('click', function(e){
+      doDashboard();
+   });
+
+
    var CALENDAR_YEAR = -1;
    function setCalendarYear() {
       CALENDAR_YEAR = jQuery("#kcw-eoy-select-year").val();
@@ -39,7 +51,7 @@ jQuery(document).ready(function(){
             html += `<div class='kcw-eoy-month-status-range'>${md.first} - ${md.last}</div>`;
             html += `<div class='kcw-eoy-month-status-count'>${md.count} Rows</div>`;
             html += `<div class='kcw-eoy-month-status-uploaded'>Uploaded on ${d.toLocaleString()}</div>`;
-            html += `<div class='kcw-eoy-month-status-delete-item' data-filename='${md.filename}'>Delete</div>`;
+            html += `<div class='kcw-eoy-month-status-delete-item' data-filename='${md.filename}'>Remove</div>`;
             html += "</div>";
          }
 
@@ -65,6 +77,12 @@ jQuery(document).ready(function(){
       jQuery("#kcw-eoy-start").attr("style", "display:none;");
    }
    
+   //dynamic element event
+   jQuery("#kcw-eoy-upload-status-wrapper").on('click', "div.kcw-eoy-month-status-delete-item", function(e) {
+      var statement = jQuery(this).data("filename");
+      ApiCall("DeleteStatement/", statement, doStepOne);
+   });
+
    jQuery("#kcw-eoy-start-generate-eoy").on('click', function(e){
       setCalendarYear();
       doStepOne();
@@ -79,20 +97,8 @@ jQuery(document).ready(function(){
       doUploadFile();
    });
 
-   function displayYearTransactions(data) {
-      console.log(data);
-   }
-   function doStepTwo() {
-      ApiCall("Transactions/", CALENDAR_YEAR, displayYearTransactions);
-      jQuery("#kcw-eoy-transactions-wrapper").attr("style", "");
-      jQuery("#kcw-eoy-upload-wrapper").attr("style", "display:none;");
-   }
-
-   jQuery("#kcw-eoy-categorize-transactions").on('click', function(e){
-      doStepTwo();
-   });
    // Upload file
-   function doUploadFile() {
+   function doUploadFile(then) {
       var files = document.getElementById("kcw-eoy-statements-upload").files;
       
       if(files.length > 0) {
@@ -110,9 +116,24 @@ jQuery(document).ready(function(){
             type: 'POST',
             success: function(data, status){
                console.log("Data: " + data + "\nStatus: " + status);
+               doStepOne();
             }
          });
       }
    }
+
+   function displayYearTransactions(data) {
+      console.log(data);
+   }
+   function doStepTwo() {
+      ApiCall("Transactions/", CALENDAR_YEAR, displayYearTransactions);
+      jQuery("#kcw-eoy-transactions-wrapper").attr("style", "");
+      jQuery("#kcw-eoy-upload-wrapper").attr("style", "display:none;");
+   }
+
+   jQuery("#kcw-eoy-categorize-transactions").on('click', function(e){
+      doStepTwo();
+   });
+  
 });
 
