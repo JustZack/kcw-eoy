@@ -10,7 +10,7 @@ public class EndOfYear {
         if( args.length == 3 ) {
         	String flag = args[0];
         	if (flag.equals("-e")) Extract.extractPDFtoJSON(args[1], args[2]);
-        	else if (flag.equals("-f"));
+        	else if (flag.equals("-c"));
         } else {
         	usage();
         }

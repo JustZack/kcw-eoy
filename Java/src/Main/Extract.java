@@ -6,7 +6,6 @@ import java.util.*;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -42,7 +41,6 @@ public class Extract {
 		
 		//Where the transaction lines begin and end
 		String startWords = "Transaction history";
-		boolean foundStart = false;
 		String endWords = "Ending balance on";
 		
 		//Line index
