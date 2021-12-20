@@ -6,13 +6,13 @@ public class EndOfYear {
 
     public static void main(String[] args) throws IOException
     {
-        if( args.length != 2 )
-        {
-            usage();
-        }
-        else
-        {
-        	Extract.extractPDFtoJSON(args[0], args[1]); 
+    	//Must have  "-flag <input-file> <output-path-or-file>"
+        if( args.length == 3 ) {
+        	String flag = args[0];
+        	if (flag.equals("-e")) Extract.extractPDFtoJSON(args[1], args[2]);
+        	else if (flag.equals("-f"));
+        } else {
+        	usage();
         }
     }
     
@@ -21,7 +21,7 @@ public class EndOfYear {
      */
     private static void usage()
     {
-        System.err.println( "usage: " + EndOfYear.class.getName() + " <input-file>" );
+        System.err.println( "usage: " + EndOfYear.class.getName() + " -e|f <input-file> <output-path-or-file>" );
     }
 
 }

@@ -33,7 +33,7 @@ function kcw_eoy_TransactionFileToAPIData($name) {
 */
 //Get transaction file data from January of the given year to January of the next.
 function kcw_eoy_GetTransactionFileDataFor($year) {
-    $files = kcw_eoy_GetJSONFiles();
+    $files = kcw_get_GetStatementJSONFiles();
     $data = array();
     for ($month = 1;$month<13;$month++) $data["".$month] = array();
 
@@ -73,7 +73,7 @@ function kcw_eoy_CullTransactions($transactions, $keepMonth) {
     exactly 13 statements exist for the given year when EOY is generated.
  */
 function kcw_eoy_GetTransactionsFor($year) {
-    $files = kcw_eoy_GetJSONFiles();
+    $files = kcw_get_GetStatementJSONFiles();
     $data = array();
 
     $intYear = (int)$year;
@@ -103,7 +103,7 @@ function kcw_eoy_GetTransactionsFor($year) {
 }
 
 function kcw_eoy_GetTransactionFileData() {
-    $files = kcw_eoy_GetJSONFiles();
+    $files = kcw_get_GetStatementJSONFiles();
     $data = array();
 
     foreach ($files as $name) {

@@ -12,11 +12,9 @@ div.kcw-eoy-month-status-row-item div {
     display: inline-block;
     margin-left: 25px;
 }
-div.kcw-eoy-month-status-row-wrapper div.kcw-eoy-month-status-row-item:last-child {
+div.kcw-eoy-month-status-row-wrapper strong {
+    display: block;
     border-bottom: 2px solid black;
-}
-div.kcw-eoy-month-status-row-wrapper:last-child div.kcw-eoy-month-status-row-item:last-child {
-    border-bottom: 0px;
 }
 
 div div.kcw-eoy-month-status-uploaded {
@@ -39,4 +37,26 @@ div.kcw-eoy-month-status-delete-item:hover {
     background: red;
     color: white;
     cursor: pointer;
+}
+
+div.kcw-eoy-month-status-row-wrapper span {
+    display: block;
+    border-radius: 25px;
+    text-align: center;
+    justify-content: center;
+}
+
+span.kcw-eoy-month-status-ok {
+    background: green;
+}
+span.kcw-eoy-month-status-warning {
+    background: yellow;
+}
+span.kcw-eoy-month-status-error {
+    background: red;
+}
+
+/* Special selectors */
+div.kcw-eoy-month-status-row-wrapper .kcw-eoy-month-status-row-item:first-of-type {
+    border-top: none;
 }

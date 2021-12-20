@@ -27,30 +27,6 @@ function kcw_eoy_api_GetTransactionFileList($data) {
     return kcw_eoy_api_Success($data);
 }
 
-function kcw_eoy_api_GetTransactions($data) {
-    $transactions = kcw_eoy_GetTransactionFileData();
-    $data = array();
-    
-    //Get transactions for the given range if required params are present
-    if (isset($_GET["from"]) && isset($_GET["to"])) {
-        $from = explode('.', $_GET["from"]);
-        $to = explode('.', $_GET["to"]);
-        $data["from"] = $from;
-        $data["to"] = $to;
-
-        $items = array();
-        foreach ($transactions as $t) {
-            array_push($items, $t);
-        }
-        $data["items"] = $items;
-    }//Otherwise respond with an error
-    else { 
-        return kcw_eoy_api_Error("Missing required parameters.");
-    }
-    return kcw_eoy_api_Success($data);
-}
-
-
 //Get all transaction file data for the given year
 function kcw_eoy_api_Status($data) {
     $year = $data["year"];
@@ -71,19 +47,18 @@ function kcw_eoy_epi_DeleteStatement($data) {
     } else {
         return kcw_eoy_api_Error("File '$filename' doesnt exist");
     }
-    
 }
 
 //Get all transactions for the given year
-function kcw_eoy_api_Transactions($data) {
+function kcw_eoy_api_GetTransactions($data) {
     $year = $data["year"];
 
     //Get all available transactions for the given year
     $transactions = kcw_eoy_GetTransactionsFor($year);
 
     $toReturn = array();
-    $toReturn["total"] = count($transactions);
-    $toReturn["transactions"] = $transactions;
+    $toReturn["year"] = $year;
+    $toReturn["items"] = $transactions;
 
     return kcw_eoy_api_Success($toReturn);
 }
@@ -97,9 +72,9 @@ function kcw_eoy_api_RegisterRestRoutes() {
         'callback' => 'kcw_eoy_api_Status',
     ));
 
-    register_rest_route("$kcw_eoy_api_namespace/v1", '/Transactions/(?P<year>[0-9]{4})', array(
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactions/(?P<year>[0-9]{4})', array(
         'methods' => 'GET',
-        'callback' => 'kcw_eoy_api_Transactions',
+        'callback' => 'kcw_eoy_api_GetTransactions',
     ));
 
     register_rest_route("$kcw_eoy_api_namespace/v1", '/DeleteStatement/(?P<filename>(([a-zA-Z0-9]+)-){3}([0-9]{4})\.json)', array(

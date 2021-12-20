@@ -17,7 +17,7 @@ if (isset($files['name']) && count($files['name']) > 0) {
             $real_path = $path.$files["name"][$i];
             //Save the file
             if(move_uploaded_file($tmp_path,$real_path)) {
-                $res; $cmd = "java -jar EndOfYear.jar \"$real_path\" $path";
+                $res; $cmd = "java -jar EndOfYear.jar -e \"$real_path\" $path";
                 exec($cmd, $res);
                 unlink($real_path);
             } 

@@ -38,8 +38,8 @@ function kcw_eoy_upload_html($show = false) {
     return "
     <div id='kcw-eoy-upload-wrapper' $style>
         <div class='kcw-eoy-step-explanation'>
-            Upload new statements for missing months;
-            Remove any additional statements, exactly 13 statements must exist.
+            Upload Wells Fargo Statements.
+            Statements from January To January are required to generate a full end of year document.
         </div>
         <form id='uploads-form' action=''>
             <label for='kcw-eoy-statements-upload'>Upload Wells Fargo Statements: </label>

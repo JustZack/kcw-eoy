@@ -33,17 +33,21 @@ jQuery(document).ready(function(){
       CALENDAR_YEAR = jQuery("#kcw-eoy-select-year").val();
       jQuery("#kcw-eoy-header-selected-year").text(CALENDAR_YEAR);
    }
+   var months = ["January","February","March","April","May","June","July","August","September","October","November","December","January"];
+   function createMonthRow(monthData, monthIndex) {
+      var month = months[monthIndex];
+      var year = monthIndex == 12 ? parseInt(CALENDAR_YEAR)+1 : CALENDAR_YEAR;
 
-   function createMonthRow(monthData) {
-      var html = "";
+      var monthStatus = 2;      
+      if (monthData.length > 1) monthStatus = 0;
+      else if (monthData.length == 1) monthStatus = 1;
+
+         var html = "<div class='kcw-eoy-month-status-row-wrapper'>";
+      html += `<strong>${month} ${year}</strong>`;
       
+
       //Atleast one transaction log found
       if (monthData.length > 0) {
-         var month = monthData[0].date.split(" ")[0];
-         var year = monthData[0].year;
-
-         html += "<div class='kcw-eoy-month-status-row-wrapper'>";
-         html += `<strong>${month} ${year}</strong>`;
          for (var m in monthData) {
             var md = monthData[m]; var d = new Date(0); d.setUTCSeconds(md.uploaded)
             html += "<div class='kcw-eoy-month-status-row-item'>";
@@ -51,23 +55,35 @@ jQuery(document).ready(function(){
             html += `<div class='kcw-eoy-month-status-range'>${md.first} - ${md.last}</div>`;
             html += `<div class='kcw-eoy-month-status-count'>${md.count} Rows</div>`;
             html += `<div class='kcw-eoy-month-status-uploaded'>Uploaded on ${d.toLocaleString()}</div>`;
-            html += `<div class='kcw-eoy-month-status-delete-item' data-filename='${md.filename}'>Remove</div>`;
+
+            //Show delete button for monthData.length>1
+            if (monthStatus == 0) html += `<div class='kcw-eoy-month-status-delete-item' data-filename='${md.filename}'>Remove</div>`;
             html += "</div>";
          }
-
-         html += "</div>";
-      } else {
-         //Row is missing data, ask for upload
-         html += "<div>No Data</div>"
       }
 
+      html += `<span class='kcw-eoy-month-status`;
+      if (monthStatus == 0) { //Too many months
+         monthStatus = 0;
+         html += `-error'>Conflicting Statements`;
+      } else if (monthStatus == 1) { //One month
+         monthStatus = 1;
+         html += `-ok'>One Statement Found`;
+      } else if (monthStatus == 2) { //No months
+         monthStatus = 2;
+         html += `-warning'>No Statements Found`;
+      }
+      html += `</span>`;
+         
+      html += "</div>";
       return html;
    }
+
    function displayYearStatus(data) {
       var status = data.items;
       var html = "";
       for (var stat in status) {
-         html += createMonthRow(status[stat]);
+         html += createMonthRow(status[stat], stat-1);
       }
       jQuery("#kcw-eoy-upload-status-wrapper").html(html);
    }
@@ -77,7 +93,7 @@ jQuery(document).ready(function(){
       jQuery("#kcw-eoy-start").attr("style", "display:none;");
    }
    
-   //dynamic element event
+   //Delete button in dynamic
    jQuery("#kcw-eoy-upload-status-wrapper").on('click', "div.kcw-eoy-month-status-delete-item", function(e) {
       var statement = jQuery(this).data("filename");
       ApiCall("DeleteStatement/", statement, doStepOne);
@@ -126,7 +142,7 @@ jQuery(document).ready(function(){
       console.log(data);
    }
    function doStepTwo() {
-      ApiCall("Transactions/", CALENDAR_YEAR, displayYearTransactions);
+      ApiCall("GetTransactions/", CALENDAR_YEAR, displayYearTransactions);
       jQuery("#kcw-eoy-transactions-wrapper").attr("style", "");
       jQuery("#kcw-eoy-upload-wrapper").attr("style", "display:none;");
    }
