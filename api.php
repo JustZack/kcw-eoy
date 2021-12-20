@@ -2,6 +2,7 @@
 
 include_once "globals.php";
 include_once "api-helpers.php";
+include_once "categorize-transactions.php";
 
 $kcw_eoy_api_namespace = "kcweoy";
 $kcw_eoy_api_url = home_url('wp-json/' . $kcw_eoy_api_namespace . '/v1/');
@@ -54,7 +55,7 @@ function kcw_eoy_api_GetTransactions($data) {
     $year = $data["year"];
 
     //Get all available transactions for the given year
-    $transactions = kcw_eoy_GetTransactionsFor($year);
+    $transactions = kcw_eoy_auto_categorize(kcw_eoy_GetTransactionsFor($year));
 
     $toReturn = array();
     $toReturn["year"] = $year;

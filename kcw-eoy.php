@@ -10,7 +10,6 @@
 
 include_once "api.php";
 include_once "file-helpers.php";
-include_once "categorize-transactions.php";
 include_once "globals.php";
 
 function  kcw_eoy_register_dependencies() {

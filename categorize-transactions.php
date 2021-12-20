@@ -23,8 +23,6 @@ function kcw_eoy_categorize($json_transaction) {
 
 //
 function kcw_eoy_auto_categorize($json_transactions) {
-    global $kcw_eoy_filter_json;
-
     $categorized = [];
     foreach ($json_transactions as $transaction) {
         array_push($categorized, kcw_eoy_categorize($transaction));
