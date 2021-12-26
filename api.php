@@ -64,24 +64,107 @@ function kcw_eoy_api_GetTransactions($data) {
     return kcw_eoy_api_Success($toReturn);
 }
 
-//Register all the API routes
-function kcw_eoy_api_RegisterRestRoutes() {
+//Save a year of transactions to a file
+function kcw_eoy_api_SaveTransactions($data) {
+    $transactions = kcw_eoy_api_GetTransactions($data);
+    $filename = kcw_eoy_SaveTransactionData($transactions["year"], $transactions["items"]);
+
+    $transactions["file"] = $filename;
+    return $transactions;
+}
+
+function kcw_eoy_epi_DeleteTransactionFile($data) {
+    $filename = $data["name"];
+    $file = kcw_eoy_GetTransactionFilesFolder()."/".$filename.".json";
+
+    if (file_exists($file)) {
+        unlink($file);
+        return kcw_eoy_api_Success(array());
+    } else {
+        return kcw_eoy_api_Error("File '$file' doesnt exist");
+    }
+    return $file;
+}
+
+function kcw_eoy_api_GetTransactionFiles($data) {
+    $toReturn = array();
+    if (isset($data["year"])) {
+        $files = kcw_eoy_GetYearFileData($data["year"]);
+        $toReturn["year"] = $data["year"];
+    } else {
+        $files = kcw_eoy_GetYearFileData();
+    }
+    $toReturn["files"] = $files;
+
+    return kcw_eoy_api_Success($toReturn);
+}
+
+function kcw_eoy_api_SetTransactionCategory($data) {
+    $name = $data["name"];
+    $index = (int)$data["index"];
+    $category = $data["category"];
+    
+    $yearfile = kcw_eoy_GetYearFile($name);
+    $transaction = $yearfile[$index];
+    
+    
+}
+
+function kcw_eoy_api_RegisterStatementBasedRoutes() {
     global $kcw_eoy_api_namespace;
 
+    //Get the status of a tax year, broken down by each month
     register_rest_route("$kcw_eoy_api_namespace/v1", '/Status/(?P<year>[0-9]{4})', array(
         'methods' => 'GET',
         'callback' => 'kcw_eoy_api_Status',
     ));
-
-    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactions/(?P<year>[0-9]{4})', array(
-        'methods' => 'GET',
-        'callback' => 'kcw_eoy_api_GetTransactions',
-    ));
-
+    //Delete the given statement
     register_rest_route("$kcw_eoy_api_namespace/v1", '/DeleteStatement/(?P<filename>(([a-zA-Z0-9]+)-){3}([0-9]{4})\.json)', array(
         'methods' => 'GET',
         'callback' => 'kcw_eoy_epi_DeleteStatement',
     ));
+}
+
+function kcw_eoy_api_RegisterYearBasedRoutes() {
+    global $kcw_eoy_api_namespace;
+
+    //Get all transactions for the given year without saving it anywhere
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactions/(?P<year>[0-9]{4})', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_GetTransactions',
+    ));
+    //Save a file for all transactions in the given year
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/SaveTransactions/(?P<year>[0-9]{4})', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_SaveTransactions',
+    ));
+    //Delete the given transaction file
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/DeleteTransactionFile/(?P<name>([0-9]{4})\.[0-9]+)', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_epi_DeleteTransactionFile',
+    ));
+
+    //Get all transaction files.
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactionFiles/', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_GetTransactionFiles',
+    ));
+    //Get all transaction files for the given year.
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactionFiles/(?P<year>[0-9]{4})', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_GetTransactionFiles',
+    ));
+
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/SetTransactionCategory/(?P<name>([0-9]{4})\.[0-9]+)/(?P<index>([0-9]+))/(?P<category>()[a-zA-Z]+)', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_SetTransactionCategory',
+    ));
+}
+
+//Register all the API routes
+function kcw_eoy_api_RegisterRestRoutes() {
+    kcw_eoy_api_RegisterStatementBasedRoutes();
+    kcw_eoy_api_RegisterYearBasedRoutes();
 }
 
 add_action( 'rest_api_init', "kcw_eoy_api_RegisterRestRoutes");
