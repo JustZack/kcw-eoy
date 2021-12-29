@@ -7,7 +7,7 @@ $kcw_eoy_filter_json = kcw_eoy_getJSONfromFile(__DIR__ . "\auto-filter.json");
 function kcw_eoy_categorize($json_transaction) {
     global $kcw_eoy_filter_json;
 
-    $search = strtolower($json_transaction["Memo"]);
+    $search = strtolower($json_transaction["memo"]);
     $foundCategory = "None";
     foreach ($kcw_eoy_filter_json as $category=>$array) {
         foreach ($kcw_eoy_filter_json[$category] as $match) {
@@ -17,7 +17,7 @@ function kcw_eoy_categorize($json_transaction) {
         }
     }
 
-    $json_transaction["Category"] = $foundCategory;
+    $json_transaction["category"] = $foundCategory;
     return $json_transaction;
 }
 

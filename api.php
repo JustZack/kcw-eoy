@@ -121,15 +121,15 @@ function kcw_eoy_api_SetTransactionCategory($data) {
     
     $yearfile = kcw_eoy_GetYearFile($name);
     $transaction = $yearfile[$index];
-    $oldCategory = $transaction["Category"];
-    $transaction["Category"] = $category;
+    $oldCategory = $transaction["category"];
+    $transaction["category"] = $category;
     $yearfile[$index] = $transaction;    
     kcw_eoy_SaveYearFile($name, $yearfile);
 
     $toReturn = array();
     $toReturn["transaction"] = $transaction;
     $toReturn["old"] = $oldCategory;
-    $toReturn["new"] = $transaction["Category"];
+    $toReturn["new"] = $transaction["category"];
 
     return kcw_eoy_api_Success($toReturn);
 }

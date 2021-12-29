@@ -18,8 +18,8 @@ function kcw_eoy_TransactionFileToAPIData($name) {
     $fData["count"] = count($json);
     $fData["filename"] = $filename.".json";
     $last = $fData["count"]-1;
-    $fData["first"] = $json[0]["Month"].'/'.$json[0]["Day"];
-    $fData["last"] = $json[$last]["Month"].'/'.$json[$last]["Day"];
+    $fData["first"] = $json[0]["month"].'/'.$json[0]["day"];
+    $fData["last"] = $json[$last]["month"].'/'.$json[$last]["day"];
     $fData["year"] = substr($date, strrpos($date, " ")+1);
     $fData["uploaded"] = filectime($name);
 
@@ -41,8 +41,8 @@ function kcw_eoy_GetTransactionFileDataFor($year) {
     $intYear = (int)$year;
     foreach ($files as $name) {
         $fData = kcw_eoy_TransactionFileToAPIData($name);
-        $startMonth = explode("/", $fData["first"])[0];
-        $endMonth = explode("/", $fData["last"])[0];
+        $startMonth = (int)explode("/", $fData["first"])[0];
+        $endMonth = (int)explode("/", $fData["last"])[0];
 
         //Any statement from the given year passes OR Check for the first statement of the NEXT year to get the last couple transactions of the desired year
         if ($fData["year"] == $year) {
@@ -62,7 +62,7 @@ function kcw_eoy_CullTransactions($transactions, $keepMonth) {
 
     for ($i = 0;$i < count($transactions);$i++) {
         $t = $transactions[$i];
-        if ($t["Month"] == $keepMonth) array_push($toReturn, $t);
+        if ($t["month"] == $keepMonth) array_push($toReturn, $t);
     }
 
     return $toReturn;
@@ -150,8 +150,8 @@ function kcw_eoy_YearFileToAPIData($name) {
     $fData["filename"] = substr($name, strrpos($name, "/")+1);
     $fData["count"] = count($json);
     $last = $fData["count"]-1;
-    $fData["first"] = $json[0]["Month"].'/'.$json[0]["Day"];
-    $fData["last"] = $json[$last]["Month"].'/'.$json[$last]["Day"];
+    $fData["first"] = $json[0]["month"].'/'.$json[0]["day"];
+    $fData["last"] = $json[$last]["month"].'/'.$json[$last]["day"];
     $fData["created"] = filectime($name);
 
     return $fData;
@@ -181,7 +181,7 @@ function kcw_eoy_GetMonthOfTransactions($transactions, $month) {
     $newTransactions = array();
     $absoluteIndex = 0;
     foreach ($transactions as $transaction) {
-        if ((int)$transaction["Month"] == (int)$month) {
+        if ((int)$transaction["month"] == (int)$month) {
             $transaction["index"] = $absoluteIndex;
             array_push($newTransactions, $transaction);
         }
