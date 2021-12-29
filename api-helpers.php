@@ -157,7 +157,7 @@ function kcw_eoy_YearFileToAPIData($name) {
     return $fData;
 }
 
-function kcw_eoy_GetYearFileData($year = -1) {
+function kcw_eoy_GetYearFilesData($year = -1) {
     $filepaths = kcw_get_GetTransactionJSONFiles();
     $files = array();
     if ($year == -1) {
@@ -175,4 +175,19 @@ function kcw_eoy_GetYearFileData($year = -1) {
 
     return $data;
 }
+
+//Get a month of transactions from a full year of transactions
+function kcw_eoy_GetMonthOfTransactions($transactions, $month) {
+    $newTransactions = array();
+    $absoluteIndex = 0;
+    foreach ($transactions as $transaction) {
+        if ((int)$transaction["Month"] == (int)$month) {
+            $transaction["index"] = $absoluteIndex;
+            array_push($newTransactions, $transaction);
+        }
+        $absoluteIndex++;
+    }
+    return $newTransactions;
+}
+
 ?>

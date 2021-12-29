@@ -89,13 +89,28 @@ function kcw_eoy_epi_DeleteTransactionFile($data) {
 function kcw_eoy_api_GetTransactionFiles($data) {
     $toReturn = array();
     if (isset($data["year"])) {
-        $files = kcw_eoy_GetYearFileData($data["year"]);
+        $files = kcw_eoy_GetYearFilesData($data["year"]);
         $toReturn["year"] = $data["year"];
     } else {
-        $files = kcw_eoy_GetYearFileData();
+        $files = kcw_eoy_GetYearFilesData();
     }
     $toReturn["files"] = $files;
 
+    return kcw_eoy_api_Success($toReturn);
+}
+
+function kcw_eoy_api_GetTransactionFile($data) {
+    $name = $data["name"];
+    $month = $data["month"];
+    $yearfile = kcw_eoy_GetYearFile($name);
+    $toReturn = array();
+    
+    if (isset($month)) {
+        if ((int)$month > 12) return kcw_eoy_api_Error("$month is not a month index.");
+        $toReturn["items"] = kcw_eoy_GetMonthOfTransactions($yearfile, $month);
+    }
+    else $toReturn["items"] = kcw_eoy_GetMonthOfTransactions($yearfile, 1);
+    
     return kcw_eoy_api_Success($toReturn);
 }
 
@@ -106,8 +121,17 @@ function kcw_eoy_api_SetTransactionCategory($data) {
     
     $yearfile = kcw_eoy_GetYearFile($name);
     $transaction = $yearfile[$index];
-    
-    
+    $oldCategory = $transaction["Category"];
+    $transaction["Category"] = $category;
+    $yearfile[$index] = $transaction;    
+    kcw_eoy_SaveYearFile($name, $yearfile);
+
+    $toReturn = array();
+    $toReturn["transaction"] = $transaction;
+    $toReturn["old"] = $oldCategory;
+    $toReturn["new"] = $transaction["Category"];
+
+    return kcw_eoy_api_Success($toReturn);
 }
 
 function kcw_eoy_api_RegisterStatementBasedRoutes() {
@@ -138,12 +162,9 @@ function kcw_eoy_api_RegisterYearBasedRoutes() {
         'methods' => 'GET',
         'callback' => 'kcw_eoy_api_SaveTransactions',
     ));
-    //Delete the given transaction file
-    register_rest_route("$kcw_eoy_api_namespace/v1", '/DeleteTransactionFile/(?P<name>([0-9]{4})\.[0-9]+)', array(
-        'methods' => 'GET',
-        'callback' => 'kcw_eoy_epi_DeleteTransactionFile',
-    ));
+}
 
+function kcw_eoy_api_RegisterYearFileBasedRoutes() {
     //Get all transaction files.
     register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactionFiles/', array(
         'methods' => 'GET',
@@ -154,7 +175,24 @@ function kcw_eoy_api_RegisterYearBasedRoutes() {
         'methods' => 'GET',
         'callback' => 'kcw_eoy_api_GetTransactionFiles',
     ));
-
+    //Delete the given transaction file
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/DeleteTransactionFile/(?P<name>([0-9]{4})\.[0-9]+)', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_epi_DeleteTransactionFile',
+    ));
+    
+    //Get the transaction data for the given file (Starting on month 1)
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactionFile/(?P<name>([0-9]{4})\.[0-9]+)', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_GetTransactionFile',
+    ));
+    //Get the transaction data for the given file on the given month
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactionFile/(?P<name>([0-9]{4})\.[0-9]+)/(?P<month>([0-9]{1,2}))', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_GetTransactionFile',
+    ));
+    
+    //Set the category for a given transaction in the given file
     register_rest_route("$kcw_eoy_api_namespace/v1", '/SetTransactionCategory/(?P<name>([0-9]{4})\.[0-9]+)/(?P<index>([0-9]+))/(?P<category>()[a-zA-Z]+)', array(
         'methods' => 'GET',
         'callback' => 'kcw_eoy_api_SetTransactionCategory',
