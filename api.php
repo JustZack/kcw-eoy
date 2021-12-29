@@ -22,6 +22,12 @@ function kcw_eoy_api_Success($data) {
     return $data;
 }
 
+function kcw_eoy_api_GetKnownCategories($data) {
+    $toReturn = array();
+    $toReturn["items"] = kcw_eoy_GetKnownCategories();
+    return kcw_eoy_api_Success($toReturn);
+}
+
 function kcw_eoy_api_GetTransactionFileList($data) {
     $data = array();
     $data["items"] = kcw_eoy_GetTransactionFileData();
@@ -203,6 +209,13 @@ function kcw_eoy_api_RegisterYearFileBasedRoutes() {
 
 //Register all the API routes
 function kcw_eoy_api_RegisterRestRoutes() {
+    global $kcw_eoy_api_namespace;
+
+    //Get all transaction files.
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetKnownCategories/', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_GetKnownCategories',
+    ));
     kcw_eoy_api_RegisterStatementBasedRoutes();
     kcw_eoy_api_RegisterYearBasedRoutes();
     kcw_eoy_api_RegisterYearFileBasedRoutes();

@@ -14,7 +14,7 @@ include_once "globals.php";
 
 function  kcw_eoy_register_dependencies() {
     wp_register_style("kcw-eoy", plugins_url("kcw-eoy.css", __FILE__), null, "1.0.1");
-    wp_register_script("kcw-eoy", plugins_url("kcw-eoy.js", __FILE__), array('jquery'), "1.0.1");
+    wp_register_script("kcw-eoy", plugins_url("kcw-eoy.js", __FILE__), array('jquery'), "1.0.5");
 }
 add_action("wp_enqueue_scripts", "kcw_eoy_register_dependencies");
 
@@ -120,9 +120,7 @@ function kcw_eoy_Init() {
     $html .= kcw_eoy_header_html();
     $html .= kcw_eoy_dashboard_html();
     $html .= kcw_eoy_upload_html();
-
-    //$f = kcw_eoy_getJSONfromFile(__DIR__ . "\october-18-2021.json");
-    //kcw_eoy_auto_categorize($f);
+    $html .= kcw_eoy_transactions_html();
 
     $html .= kcw_eoy_EndBlock();
     echo $html;

@@ -138,13 +138,64 @@ jQuery(document).ready(function(){
       }
    }
 
-   function displayYearTransactions(data) {
-      console.log(data);
+   function generateDropDown(options, classname = "", id = "") {
+      var html = "<select ";
+      if (classname.length > 0) html += `class='${classname}' `;
+      if (id.length > 0) html += `id='${id}' `;
+      html += ">";
+
+      for (var option in options) html += `<option value='${options[option]}'>${options[option]}</option>`;
+
+      html += "</select>";
+      return html;
+   }
+
+
+   var CALENDAR_MONTH = 1;
+   var CATEGORIES_DROPDOWN_HTML = "";
+   var TRANSACTION_FILE = "";
+   function createTransactionRow(transaction) {
+      var date = transaction.month + "/" + transaction.day;
+      var total = transaction.value;
+      var category = transaction.category;ssss
+      var memo = transaction.memo;
+      var index = transaction.index;
+
+      var html = `<div class='kcw-eoy-transaction-row-wrapper' data-index='${index}'>`;
+      html += `<strong>${date}</strong>`;
+      html += `<strong> // </strong>`;
+      html += `<strong>${total}</strong>`;
+      html += `<strong> // </strong>`;
+      html += `<strong>${category}</strong>`;
+      html += `<em>${memo}</em>`;
+      html += "</div>";
+      return html;
+   }
+   function displayCurrentMonthTransactions() {
+      //Ask the server for the current page 
+      ApiCall("GetTransactionFile/", TRANSACTION_FILE+"/"+CALENDAR_MONTH, function(transactions) {
+         var html = "";
+         for (var t in transactions.items) {
+            html += createTransactionRow(transactions.items[t]);
+         }
+         jQuery("#kcw-eoy-transactions-wrapper").html(html);
+      });
    }
    function doStepTwo() {
-      ApiCall("GetTransactions/", CALENDAR_YEAR, displayYearTransactions);
-      jQuery("#kcw-eoy-transactions-wrapper").attr("style", "");
-      jQuery("#kcw-eoy-upload-wrapper").attr("style", "display:none;");
+      //Ask the server for all the categories it knows of FIRST
+      ApiCall("GetKnownCategories/", "", function(data) {
+         CATEGORIES_DROPDOWN_HTML = generateDropDown(data.items, "kcw-eoy-transaction-category-dropdown");
+         console.log(CATEGORIES_DROPDOWN_HTML);
+         //Hide the previous step
+         jQuery("#kcw-eoy-upload-wrapper").attr("style", "display:none;");
+         //Show the current step
+         jQuery("#kcw-eoy-transactions-wrapper").attr("style", "");
+         //Then tell the server to save the transactions for this year and save the file
+         ApiCall("SaveTransactions/", CALENDAR_YEAR, function(data) {
+            TRANSACTION_FILE = data.file;
+            displayCurrentMonthTransactions();
+         });
+      });
    }
 
    jQuery("#kcw-eoy-categorize-transactions").on('click', function(e){

@@ -1,6 +1,7 @@
 <?php
 
 include_once "globals.php";
+include_once "file-helpers.php";
 
 function kcw_eoy_TransactionFileToAPIData($name) {
     $contents = file_get_contents($name);
@@ -188,6 +189,11 @@ function kcw_eoy_GetMonthOfTransactions($transactions, $month) {
         $absoluteIndex++;
     }
     return $newTransactions;
+}
+
+function kcw_eoy_GetKnownCategories() {
+    $kcw_eoy_filter_json = kcw_eoy_getJSONfromFile(__DIR__ . "\auto-filter.json");
+    return array_keys($kcw_eoy_filter_json);
 }
 
 ?>
