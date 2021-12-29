@@ -165,6 +165,8 @@ function kcw_eoy_api_RegisterYearBasedRoutes() {
 }
 
 function kcw_eoy_api_RegisterYearFileBasedRoutes() {
+    global $kcw_eoy_api_namespace;
+
     //Get all transaction files.
     register_rest_route("$kcw_eoy_api_namespace/v1", '/GetTransactionFiles/', array(
         'methods' => 'GET',
@@ -203,6 +205,7 @@ function kcw_eoy_api_RegisterYearFileBasedRoutes() {
 function kcw_eoy_api_RegisterRestRoutes() {
     kcw_eoy_api_RegisterStatementBasedRoutes();
     kcw_eoy_api_RegisterYearBasedRoutes();
+    kcw_eoy_api_RegisterYearFileBasedRoutes();
 }
 
 add_action( 'rest_api_init', "kcw_eoy_api_RegisterRestRoutes");

@@ -24,10 +24,10 @@ public class Transaction {
 	public String toJSON() {
 		StringBuilder JSON = new StringBuilder();
 		JSON.append("{");
-		JSON.append(KeyValue("Month", this.Month, true));
-		JSON.append(KeyValue("Day", this.Day, true));
-		JSON.append(KeyValue("Value", this.Value, true));
-		JSON.append(KeyValue("Memo", this.Memo, true));
+		JSON.append(KeyValue("month", this.Month, true));
+		JSON.append(KeyValue("day", this.Day, true));
+		JSON.append(KeyValue("value", this.Value, true));
+		JSON.append(KeyValue("memo", this.Memo, true));
 		JSON.append(KeyValue("transactionString", this.transactionString, false));
 		JSON.append("}");
 		return JSON.toString();
