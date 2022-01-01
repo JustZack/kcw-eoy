@@ -192,7 +192,7 @@ jQuery(document).ready(function(){
          jQuery("#kcw-eoy-transactions-wrapper").attr("style", "");
          //Then tell the server to save the transactions for this year and save the file
          ApiCall("SaveTransactions/", CALENDAR_YEAR, function(data) {
-            TRANSACTION_FILE = data.file;
+            TRANSACTION_FILE = data.year;
             displayCurrentMonthTransactions();
          });
       });

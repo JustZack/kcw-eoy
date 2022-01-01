@@ -117,30 +117,20 @@ function kcw_eoy_GetTransactionFileData() {
     return $data;
 }
 
-
-//Save transaction data based on the given year.
-//Saves under kcw-eoy/years/$year.x.json
-function kcw_eoy_SaveTransactionData($year, $transactions) {
-    $years_transactions = kcw_get_GetYearTransactionJSONFiles();
-    $copyNum = 0;
-    foreach ($years_transactions as $year_path) if (strpos($year_path, "/".$year.".")) $copyNum++;
-
-    $name = $year . "." . $copyNum;
-    $file = kcw_eoy_GetYearTransactionsFilesFolder() . "/" . $name . ".json";
-    file_put_contents($file, json_encode($transactions));
-
-    return $name;
-}
-
-function kcw_eoy_GetYearFile($name) {
+//Get the year transaction data for the given year
+function kcw_eoy_GetYearTransactionFile($year) {
     $years_transactions = kcw_get_GetYearTransactionJSONFiles();
     foreach ($years_transactions as $year_path) 
-        if (strpos($year_path, "/".$name.".json"))
+        if (strpos($year_path, "/".$year.".json"))
             return json_decode(file_get_contents($year_path), true);
 }
-function kcw_eoy_SaveYearFile($name, $transactions) {
-    $file = kcw_eoy_GetTransactionFilesFolder() . "/" . $name . ".json";
+//Save transaction data based on the given year.
+//Saves under kcw-eoy/years/$year.json
+//Exactly one transaction log exists for each year
+function kcw_eoy_SaveYearFile($year, $transactions) {
+    $file = kcw_eoy_GetYearTransactionsFilesFolder() . "/" . $year . ".json";
     file_put_contents($file, json_encode($transactions));
+    return $year;
 }
 
 function kcw_eoy_YearFileToAPIData($name) {
@@ -178,20 +168,23 @@ function kcw_eoy_GetYearFilesData($year = -1) {
     return $data;
 }
 
-//Get a month of transactions from a full year of transactions
+//Get a month of transactions given a full year of transactions
+//Used for paging
 function kcw_eoy_GetMonthOfTransactions($transactions, $month) {
-    $newTransactions = array();
+    $monthTransactions = array();
     $absoluteIndex = 0;
     foreach ($transactions as $transaction) {
         if ((int)$transaction["month"] == (int)$month) {
             $transaction["index"] = $absoluteIndex;
-            array_push($newTransactions, $transaction);
+            array_push($monthTransactions, $transaction);
         }
         $absoluteIndex++;
     }
-    return $newTransactions;
+    return $monthTransactions;
 }
 
+//Return all transaction categories
+//Used to set categories on the front end
 function kcw_eoy_GetKnownCategories() {
     $kcw_eoy_filter_json = kcw_eoy_getJSONfromFile(__DIR__ . "\auto-filter.json");
     return array_keys($kcw_eoy_filter_json);

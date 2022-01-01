@@ -14,7 +14,7 @@ include_once "globals.php";
 
 function  kcw_eoy_register_dependencies() {
     wp_register_style("kcw-eoy", plugins_url("kcw-eoy.css", __FILE__), null, "1.0.1");
-    wp_register_script("kcw-eoy", plugins_url("kcw-eoy.js", __FILE__), array('jquery'), "1.0.5");
+    wp_register_script("kcw-eoy", plugins_url("kcw-eoy.js", __FILE__), array('jquery'), "1.0.6");
 }
 add_action("wp_enqueue_scripts", "kcw_eoy_register_dependencies");
 
