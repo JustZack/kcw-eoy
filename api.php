@@ -28,16 +28,16 @@ function kcw_eoy_api_GetKnownCategories($data) {
     return kcw_eoy_api_Success($toReturn);
 }
 
-function kcw_eoy_api_GetTransactionFileList($data) {
-    $data = array();
-    $data["items"] = kcw_eoy_GetTransactionFileData();
-    return kcw_eoy_api_Success($data);
+function kcw_eoy_api_GetStatements($data) {
+    $toReturn = array();
+    $toReturn["items"] = kcw_eoy_GetTransactionFileData();
+    return kcw_eoy_api_Success($toReturn);
 }
 
 //Get all transaction file data for the given year
 function kcw_eoy_api_Status($data) {
     $year = $data["year"];
-    $files = kcw_eoy_GetTransactionFileDataFor($year);
+    $files = kcw_eoy_GetStatementFileDataFor($year);
     $data = array();
     $data["items"] = $files;
     return kcw_eoy_api_Success($data);
@@ -81,7 +81,7 @@ function kcw_eoy_api_SaveTransactions($data) {
 
 function kcw_eoy_epi_DeleteTransactionFile($data) {
     $filename = $data["name"];
-    $file = kcw_eoy_GetTransactionFilesFolder()."/".$filename.".json";
+    $file = kcw_eoy_GetYearTransactionsFilesFolder()."/".$filename.".json";
 
     if (file_exists($file)) {
         unlink($file);
@@ -143,6 +143,12 @@ function kcw_eoy_api_SetTransactionCategory($data) {
 function kcw_eoy_api_RegisterStatementBasedRoutes() {
     global $kcw_eoy_api_namespace;
 
+
+    //List all statements
+    register_rest_route("$kcw_eoy_api_namespace/v1", '/GetStatements/', array(
+        'methods' => 'GET',
+        'callback' => 'kcw_eoy_api_GetStatements',
+    ));
     //Get the status of a tax year, broken down by each month
     register_rest_route("$kcw_eoy_api_namespace/v1", '/Status/(?P<year>[0-9]{4})', array(
         'methods' => 'GET',

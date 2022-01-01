@@ -3,7 +3,7 @@
 include_once "globals.php";
 include_once "file-helpers.php";
 
-function kcw_eoy_TransactionFileToAPIData($name) {
+function kcw_eoy_StatementFileToAPIData($name) {
     $contents = file_get_contents($name);
     $json = json_decode($contents, true);
 
@@ -33,15 +33,15 @@ function kcw_eoy_TransactionFileToAPIData($name) {
 --> To include all transactions in 2021 you need Statements from January 2021 -> January 2022.
 */
 //Get transaction file data from January of the given year to January of the next.
-function kcw_eoy_GetTransactionFileDataFor($year) {
-    $files = kcw_get_GetStatementJSONFiles();
+function kcw_eoy_GetStatementFileDataFor($year) {
+    $files = kcw_get_GetWellsFargoStatementJSONFiles();
     $data = array();
 
     for ($month = 1;$month<13;$month++) $data["".$month] = array();
 
     $intYear = (int)$year;
     foreach ($files as $name) {
-        $fData = kcw_eoy_TransactionFileToAPIData($name);
+        $fData = kcw_eoy_StatementFileToAPIData($name);
         $startMonth = (int)explode("/", $fData["first"])[0];
         $endMonth = (int)explode("/", $fData["last"])[0];
 
@@ -75,12 +75,12 @@ function kcw_eoy_CullTransactions($transactions, $keepMonth) {
     exactly 13 statements exist for the given year when EOY is generated.
  */
 function kcw_eoy_GetTransactionsFor($year) {
-    $files = kcw_get_GetStatementJSONFiles();
+    $files = kcw_get_GetWellsFargoStatementJSONFiles();
     $data = array();
     for ($month = 1;$month<13;$month++) $data["".$month] = array();
     $intYear = (int)$year;
     foreach ($files as $name) {
-        $fData = kcw_eoy_TransactionFileToAPIData($name);
+        $fData = kcw_eoy_StatementFileToAPIData($name);
         $startMonth = explode("/", $fData["first"])[0];
         $endMonth = explode("/", $fData["last"])[0];
         
@@ -107,33 +107,33 @@ function kcw_eoy_GetTransactionsFor($year) {
 }
 
 function kcw_eoy_GetTransactionFileData() {
-    $files = kcw_get_GetStatementJSONFiles();
+    $files = kcw_get_GetWellsFargoStatementJSONFiles();
     $data = array();
 
     foreach ($files as $name) {
-        $fData = kcw_eoy_TransactionFileToAPIData($name);
-        array_push($data, $fData);
+        array_push($data, kcw_eoy_StatementFileToAPIData($name));
     }
 
     return $data;
 }
 
+
 //Save transaction data based on the given year.
 //Saves under kcw-eoy/years/$year.x.json
 function kcw_eoy_SaveTransactionData($year, $transactions) {
-    $years_transactions = kcw_get_GetTransactionJSONFiles();
+    $years_transactions = kcw_get_GetYearTransactionJSONFiles();
     $copyNum = 0;
     foreach ($years_transactions as $year_path) if (strpos($year_path, "/".$year.".")) $copyNum++;
 
     $name = $year . "." . $copyNum;
-    $file = kcw_eoy_GetTransactionFilesFolder() . "/" . $name . ".json";
+    $file = kcw_eoy_GetYearTransactionsFilesFolder() . "/" . $name . ".json";
     file_put_contents($file, json_encode($transactions));
 
     return $name;
 }
 
 function kcw_eoy_GetYearFile($name) {
-    $years_transactions = kcw_get_GetTransactionJSONFiles();
+    $years_transactions = kcw_get_GetYearTransactionJSONFiles();
     foreach ($years_transactions as $year_path) 
         if (strpos($year_path, "/".$name.".json"))
             return json_decode(file_get_contents($year_path), true);
@@ -153,13 +153,14 @@ function kcw_eoy_YearFileToAPIData($name) {
     $last = $fData["count"]-1;
     $fData["first"] = $json[0]["month"].'/'.$json[0]["day"];
     $fData["last"] = $json[$last]["month"].'/'.$json[$last]["day"];
+    $fData["year"] = substr($name, strrpos($name, "/")+1, 4);
     $fData["created"] = filectime($name);
 
     return $fData;
 }
 
 function kcw_eoy_GetYearFilesData($year = -1) {
-    $filepaths = kcw_get_GetTransactionJSONFiles();
+    $filepaths = kcw_get_GetYearTransactionJSONFiles();
     $files = array();
     if ($year == -1) {
         $files = $filepaths;
@@ -195,5 +196,4 @@ function kcw_eoy_GetKnownCategories() {
     $kcw_eoy_filter_json = kcw_eoy_getJSONfromFile(__DIR__ . "\auto-filter.json");
     return array_keys($kcw_eoy_filter_json);
 }
-
 ?>

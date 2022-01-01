@@ -29,20 +29,20 @@ function kcw_eoy_GetFiles($ext = "*", $relativepath = "") {
     return $actual_files;
 }*/
 
-function kcw_get_GetStatementJSONFiles() {
+function kcw_eoy_GetJSONFiles($relativepath = "") {
+    return kcw_eoy_GetFiles(".json", $relativepath);
+}
+
+function kcw_get_GetWellsFargoStatementJSONFiles() {
     return kcw_eoy_GetJSONFiles();
 }
-function kcw_eoy_GetTransactionFilesFolder() {
+function kcw_eoy_GetYearTransactionsFilesFolder() {
     global $kcw_eoy_upload_path;
     $abolsutedir = $kcw_eoy_upload_path . "years";
     return $abolsutedir;
 }
-function kcw_get_GetTransactionJSONFiles() {
+function kcw_get_GetYearTransactionJSONFiles() {
     return kcw_eoy_GetJSONFiles("years");
-}
-
-function kcw_eoy_GetJSONFiles($relativepath = "") {
-    return kcw_eoy_GetFiles(".json", $relativepath);
 }
 
 ?>

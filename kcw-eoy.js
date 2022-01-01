@@ -157,7 +157,7 @@ jQuery(document).ready(function(){
    function createTransactionRow(transaction) {
       var date = transaction.month + "/" + transaction.day;
       var total = transaction.value;
-      var category = transaction.category;ssss
+      var category = transaction.category;
       var memo = transaction.memo;
       var index = transaction.index;
 
